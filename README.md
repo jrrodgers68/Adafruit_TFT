@@ -9,10 +9,9 @@ Original Libraries are available at:
 https://github.com/adafruit/Adafruit-GFX-Library
 https://github.com/adafruit/TFTLCD-Library
 
-The library should work with the following displays:
+The library should work with the following display:
 
 http://www.adafruit.com/products/376
-http://www.adafruit.com/products/1651
 
 and also low cost displays available at ebay:
 http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=290994460684&ssPageName=ADME:L:OC:US:3160

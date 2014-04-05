@@ -355,8 +355,39 @@
   #define CD_PORT A2				/*pin A2 */
   #define CS_PORT A3				/*pin A3 */
   #define RST_PORT A4				/*pin A4 */
+  #define pinHigh(pin) PIN_MAP[pin].gpio_peripheral->BSRR = PIN_MAP[pin].gpio_pin
+  #define pinLow(pin) PIN_MAP[pin].gpio_peripheral->BRR = PIN_MAP[pin].gpio_pin
 
-  #define write8inline(d) { \
+
+
+#define write8inline(d) { \
+    \
+    int tempA = GPIOA->ODR & 0xFFFF1FFF;  \
+	int tempB = GPIOB->ODR & 0xFFFFFF07; \
+	if (d & 0x01)  tempB |= 1<<7; \
+	if (d & 0x02)  tempB |= 1<<6; \
+	if (d & 0x04)  tempB |= 1<<5; \
+	if (d & 0x08)  tempB |= 1<<4; \
+	if (d & 0x10)  tempB |= 1<<3; \
+	if (d & 0x20)  tempA |= 1<<15; \
+	if (d & 0x40)  tempA |= 1<<14; \
+	if (d & 0x80)  tempA |= 1<<13; \
+	GPIOB->ODR = tempB; \
+    GPIOA->ODR = tempA;  \
+    WR_STROBE; }
+/*
+
+#define write8inline(d) { \
+    \
+    int loop; \
+    for (loop=0 ; loop < 8 ; loop++ ) \
+     { \
+    	d&1? pinHigh(loop):pinLow(loop); \
+    	d = d>>1; \
+     } \
+    WR_STROBE; }
+/*
+#define write8inline(d) { \
     \
     int loop; \
     for (loop=0 ; loop < 8 ; loop++ ) \
@@ -364,7 +395,7 @@
     	digitalWrite(loop,d&1); \
     	d = d>>1; \
      } \
-    WR_STROBE; }
+    WR_STROBE; } */
 
   #define read8inline(result) {  \
     RD_ACTIVE;   \
@@ -400,8 +431,8 @@
    // These are single-instruction operations and always inline
    #define RD_ACTIVE  digitalWrite(RD_PORT,LOW)
    #define RD_IDLE    digitalWrite(RD_PORT,HIGH)
-   #define WR_ACTIVE  digitalWrite(WR_PORT,LOW)
-   #define WR_IDLE    digitalWrite(WR_PORT,HIGH)
+   #define WR_ACTIVE  pinLow(WR_PORT)
+   #define WR_IDLE    pinHigh(WR_PORT)
    #define CD_COMMAND digitalWrite(CD_PORT,LOW)
    #define CD_DATA    digitalWrite(CD_PORT,HIGH)
    #define CS_ACTIVE  digitalWrite(CS_PORT,LOW)

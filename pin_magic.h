@@ -362,18 +362,20 @@
 
 #define write8inline(d) { \
     \
-    int tempA = GPIOA->ODR & 0xFFFF1FFF;  \
-	int tempB = GPIOB->ODR & 0xFFFFFF07; \
-	if (d & 0x01)  tempB |= 1<<7; \
+    GPIOA->BRR = 0xE000;  \
+	GPIOB->BRR = 0xF8; \
+	int tempA = 0; \
+	int tempB = 0; \
+	if (d & 0x01)  tempB = 1<<7; \
 	if (d & 0x02)  tempB |= 1<<6; \
 	if (d & 0x04)  tempB |= 1<<5; \
 	if (d & 0x08)  tempB |= 1<<4; \
 	if (d & 0x10)  tempB |= 1<<3; \
-	if (d & 0x20)  tempA |= 1<<15; \
+	if (d & 0x20)  tempA = 1<<15; \
 	if (d & 0x40)  tempA |= 1<<14; \
 	if (d & 0x80)  tempA |= 1<<13; \
-	GPIOB->ODR = tempB; \
-    GPIOA->ODR = tempA;  \
+	GPIOB->BSRR = tempB; \
+    GPIOA->BSRR = tempA;  \
     WR_STROBE; }
 /*
 
